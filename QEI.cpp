@@ -11,7 +11,7 @@ QEI::QEI(PinName channelA, PinName channelB, PinName index, Encoding encoding) :
     _nSpeedAvrTimeSum = 0;
     _nSpeedAvrTimeCount = -1;
     _fLastSpeed = 0;
-    _nSpeedTimeoutMax = 5;
+    _nSpeedTimeoutMax = 10;
     _nSpeedTimeoutCount = 0;
 
     _SpeedTimer.reset();
@@ -28,13 +28,11 @@ QEI::QEI(PinName channelA, PinName channelB, PinName index, Encoding encoding) :
     //X2 encoding uses interrupts on only channel A.
     //X4 encoding uses interrupts on both channel A and B.
     _encoding = encoding;
-    _encode_type = 2;
     _channelA.rise(callback(this, &QEI::encode));
     _channelA.fall(callback(this, &QEI::encode));
 
     if (_encoding == X4_ENCODING)
     {
-        _encode_type = 4;
         _channelB.rise(callback(this, &QEI::encode));
         _channelB.fall(callback(this, &QEI::encode));
     }
@@ -77,7 +75,7 @@ void QEI::setSpeedFactor(float fSpeedFactor)
 
 float QEI::getSpeed()
 {
-    float fSpeed;
+    // float fSpeed;
     int avrTimeSum = 0;
     int avrTimeCount = 0;
 
@@ -92,21 +90,21 @@ float QEI::getSpeed()
     {
         if (_nSpeedTimeoutCount++ > _nSpeedTimeoutMax)
             _fLastSpeed *= 0.5f;
-        fSpeed = _fLastSpeed;
+        _fSpeed = _fLastSpeed;
     }
     else if (avrTimeCount < 0 || avrTimeSum == 0)
     {
-        fSpeed = 0;
+        _fSpeed = 0;
         _nSpeedTimeoutCount = 0;
     }
     else
     {
-        fSpeed = 1000000.0f * _fSpeedFactor / ((float)avrTimeSum / (float)avrTimeCount);
+        _fSpeed = 1000000.0f * _fSpeedFactor / ((float)avrTimeSum / (float)avrTimeCount);
         _nSpeedTimeoutCount = 0;
     }
-    _fLastSpeed = fSpeed;
+    _fLastSpeed = _fSpeed;
 
-    return fSpeed;
+    return _fSpeed;
 }
 
 void QEI::setPositionFactor(float fPositionFactor)

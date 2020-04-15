@@ -100,6 +100,8 @@
  * of pulses per revolution.
  */
 
+// https://os.mbed.com/users/benson516/code/QEI/file/4682b3d415bd/QEI.cpp/
+
 #ifndef _QEI_H_
 #define _QEI_H_
 
@@ -192,7 +194,7 @@ public:
      */
     float getPosition();
 
-private:
+protected:
     /**
      * Update the pulse count
      * Called on every rising/falling edge of channels A/B
@@ -211,7 +213,6 @@ private:
     InterruptIn _index;
 
     Encoding _encoding;
-    int _encode_type;
     int _prevState;
     int _currState;
 
@@ -229,6 +230,7 @@ private:
     int _nSpeedAvrTimeSum;
     int _nSpeedAvrTimeCount;
     float _fLastSpeed;
+    float _fSpeed;
 };
 
 #endif
